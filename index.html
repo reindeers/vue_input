@@ -1,0 +1,106 @@
+<html>
+	<header>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<style>
+			.active {
+				color: cornflowerblue;
+			}
+			.activeBorder {
+				border: 2px solid cornflowerblue!important;
+			}
+			.input__container h1 {
+				text-transform: uppercase;
+			}
+			.input__container h1, .input__container span {
+				font-size: 14px;
+				font-family: sans-serif;
+			}
+			.input__dynamic {
+				min-width: 20px;
+				border: none;
+				border-bottom: 1px solid lightgray;
+			}
+			.input__dynamic:focus, .input__dynamic:active {
+				border: none;
+				outline: none;
+				border-bottom: 1px solid cornflowerblue;
+			}
+			.input__userpic {
+				padding: 1px;
+				border: 2px solid white;
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				margin-right: 20px;
+			}
+			.input__container {
+				display: flex;
+			}
+		</style>
+	</header>
+	<body>
+		<div id="app">
+		  <input-group
+			v-model="age"
+		  ></input-group>
+		</div>
+		<script>			
+			Vue.component('InputGroup', {
+				template:
+					`<div class="input__container">
+						<img src="0_e91cd_a1fd3870_xl.jpg" v-bind:class="['input__userpic', { activeBorder: isActive }]">
+						<div>
+							<h1 v-bind:class="{ active: isActive }">hugh is</h1>
+							<input 
+								v-model="value0" 
+								v-on:input="inputValue"
+								v-on:focusout="isActive = false"
+								v-on:focus="isActive = true"
+								v-on:active="isActive = true"
+								class="input__dynamic"
+								:style="{width: width + 'px'}"
+							> <span>hours old {{width + 'px'}}</span>
+						</div>
+					</div>`,
+				data: function() {
+					return {
+						value0: this.value,
+						isActive: false,
+						width: 50
+					}
+				},
+				props: ['value'],
+				methods: {
+					inputValue(e){
+						let v = this.format(this.value0.toString());	
+						this.value0 = v;
+						this.$emit('format', v);
+						this.width = 50 + v.length * 5;
+					},
+					reversedRange: (start, stop, step = 1) => {
+						let res = [];
+						for (var i = start-step; i >= stop; i = i - step){
+							res.push(i);
+							this.width += 5; 
+						}
+						return res;
+					},
+					format(v) {
+						let validated = v.replace(/[^0-9]/gim, '').split('');
+						let indexes = this.reversedRange(validated.length - 1, 0, 3);
+						if (validated.length > 3) indexes.forEach(item => validated[item] = validated[item] +" ");
+						return validated.join('')
+					}
+				}
+ 			})
+			
+			new Vue({
+			  el: '#app',
+			  data: {
+				age: null
+			  }
+			});
+		</script>
+	
+	</body>
+</html>
